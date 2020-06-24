@@ -1,6 +1,18 @@
 title 0.4 New Note
 
+note over browser:
+After clicking, form data is sent as 
+the body of the HTTP POST request
+end note
+
 browser->server: HTTP POST https://fullstack-exampleappherokuapp.com/new_note
+
+note over server:
+the server creates a new note object
+based on the form data
+and adds it to its notes array
+end note
+
 server-->browser: URL redirect /notes
 browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
 server-->browser: HTML-code
