@@ -12,7 +12,14 @@ const Statistics = ({ good, neutral, bad }) => {
   // Score equivalent: Good: 1, Neutral: 0, Bad: -1
   const average = (good + (bad * -1)) / total
   const positive = (good / total) * 100
-  
+
+  // Display statistics only once feedback has been gathered
+  if (total === 0) {
+    return (
+      <p>No feedback given</p>
+    )
+  }
+
   return (
     <div>
       <h1>Statistics</h1> 
