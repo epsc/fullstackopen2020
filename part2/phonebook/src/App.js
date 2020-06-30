@@ -4,7 +4,7 @@ const Entries = ({ persons }) => {
   return (
     <div>
       {persons.map(person => 
-        <p key={person.name}>{person.name}</p>
+        <p key={person.name}>{person.name} {person.number}</p>
       )}
     </div>
   )
@@ -12,22 +12,28 @@ const Entries = ({ persons }) => {
 
 const App = () => {
   const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '040-123456' }
   ])
   const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
 
   const addPerson = (event) => {
     event.preventDefault()
    
     persons.map(person => person.name).includes(newName)
       ? alert(`${newName} is already added to the phonebook`)
-      : setPersons(persons.concat({ name: newName }))
+      : setPersons(persons.concat({ name: newName, number: newNumber }))
 
     setNewName('')
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
   }
 
   return (
@@ -39,6 +45,13 @@ const App = () => {
           <input 
             value={newName}
             onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          number:
+          <input 
+            value={newNumber}
+            onChange={handleNumberChange}
           />
         </div>
         <div>
