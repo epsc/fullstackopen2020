@@ -25,11 +25,21 @@ const Content = ({ course }) => {
   )
 }
 
+const Total = ({ course }) => {
+  // To sum up values in an array of objects, an initial value must be supplied first
+  const total = course.parts.reduce((sum, part) => sum + part.exercises, 0)
+
+  return (
+    <p><b>total of {total} exercises</b></p>
+  )
+}
+
 const Course = ({ course }) => {
   return (
     <div>
       <Header course={course} />
       <Content course={course} />
+      <Total course={course} />
     </div>    
   )
 }
