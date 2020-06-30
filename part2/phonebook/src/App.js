@@ -18,12 +18,11 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    
-    const newPerson = {
-      name: newName
-    }
-  
-    setPersons(persons.concat(newPerson))
+   
+    persons.map(person => person.name).includes(newName)
+      ? alert(`${newName} is already added to the phonebook`)
+      : setPersons(persons.concat({ name: newName }))
+
     setNewName('')
   }
 
