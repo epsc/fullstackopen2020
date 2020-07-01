@@ -1,18 +1,24 @@
 import React from 'react'
 import Country from './Country'
 
-const Countries = ({ countries, search }) => {
+const Countries = ({ countries, search, setSearch }) => {
   const filteredCountries = countries
     .filter(country => 
       country.name.toLowerCase()
       .includes(search.toLowerCase()))
   
-    // Render instructions if no search input
+  // Handler for show button
+  const showCountry = (event) => {
+    setSearch(event.target.value)
+  }
+
+  // Render instructions if no search input
   if (search === '') {
     return (
       <div>Specify a country to search for</div>
     )
   }
+
   // Render country information if only one country matches
   if (filteredCountries.length === 1) {
     return (
@@ -24,7 +30,14 @@ const Countries = ({ countries, search }) => {
   if (filteredCountries.length <= 10) {
     return (
       <div>
-        {filteredCountries.map(country => <div key={country.alpha2Code}>{country.name}</div>)}
+        {filteredCountries.map(country => 
+          <div key={country.alpha2Code}>
+            {country.name}
+            <button onClick={showCountry} value={country.name}>
+              show
+            </button>
+          </div>
+        )}
       </div>
     )
   } 
