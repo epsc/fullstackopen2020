@@ -5,7 +5,8 @@ import Countries from './components/Countries'
 const App = () => {
   const [countries, setCountries] = useState([])
   const [search, setSearch] = useState('')
-  
+  const [weather, setWeather] = useState(null)
+
   // Fetch country data at the start of the application
   useEffect(() => {
     axios
@@ -15,6 +16,7 @@ const App = () => {
       })
   }, [])
 
+  // Event handler for search input
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
   }
@@ -26,7 +28,13 @@ const App = () => {
         value={search}
         onChange={handleSearchChange}
       />
-    <Countries countries={countries} search={search} setSearch={setSearch} />
+    <Countries
+      countries={countries}
+      search={search} 
+      setSearch={setSearch} 
+      setWeather={setWeather} 
+      weather={weather}
+    />
     </div>
   )
 }

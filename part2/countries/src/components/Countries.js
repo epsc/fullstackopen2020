@@ -1,7 +1,7 @@
 import React from 'react'
 import Country from './Country'
 
-const Countries = ({ countries, search, setSearch }) => {
+const Countries = ({ countries, search, setSearch, setWeather, weather }) => {
   const filteredCountries = countries
     .filter(country => 
       country.name.toLowerCase()
@@ -22,7 +22,11 @@ const Countries = ({ countries, search, setSearch }) => {
   // Render country information if only one country matches
   if (filteredCountries.length === 1) {
     return (
-      <Country country={filteredCountries[0]} />
+      <Country 
+        country={filteredCountries[0]}
+        setWeather={setWeather}
+        weather={weather}
+      />
     )
   }
   

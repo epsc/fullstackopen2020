@@ -1,6 +1,7 @@
 import React from 'react'
+import Weather from './Weather'
 
-const Country = ({ country }) => {
+const Country = ({ country, setWeather, weather }) => {
   return (
     <div>
       <h2>{country.name}</h2>
@@ -18,6 +19,8 @@ const Country = ({ country }) => {
         width='10%' 
         length='10%' 
       />
+      <h3>Weather in {country.capital}</h3>
+      <Weather country={country} setWeather={setWeather} weather={weather}/>
     </div>
   )
 }
