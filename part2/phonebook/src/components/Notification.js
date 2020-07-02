@@ -5,13 +5,11 @@ const Notification = ({ notification }) => {
     return null
   }
 
-  if (notification.status === 'pass') {
-    return (
-      <div className='success'>
-        {notification.message}
-      </div>
-    )
-  }
+  return (
+    <div className={notification.status}>
+      {notification.message}
+    </div>
+  )
 }
 
 export default Notification

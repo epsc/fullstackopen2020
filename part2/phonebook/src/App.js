@@ -39,6 +39,16 @@ const App = () => {
               message: `The phone number of ${returnedPerson.name} has been updated`
             })
           })
+          .catch(error => {
+            setPersons(persons.filter(person => person.id !== changedPerson.id))
+            setNotification({
+              status: 'error',
+              message: `Information of ${changedPerson.name} has already been removed from the server`
+            })
+            setTimeout(() => {
+              setNotification(null)
+            }, 5000)
+          })
       }
     } else {
       const personObject = ({name: newName, number: newNumber})
