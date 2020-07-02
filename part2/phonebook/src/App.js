@@ -20,19 +20,31 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    
+
     if (persons.map(person => person.name).includes(newName)) {
-      alert(`${newName} is already added to the phonebook`)
+      const confirmation = window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)
+      
+      if (confirmation) {
+        const person = persons.find(person => person.name === newName)
+        const changedPerson = { ...person, number: newNumber }
+
+        personService
+          .update(changedPerson.id, changedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+          })
+      }
     } else {
       const personObject = ({name: newName, number: newNumber})
       personService
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          setNewName('')
-          setNewNumber('')
         })
     }
+
+    setNewName('')
+    setNewNumber('')
   }
 
   const deletePerson = (id) => {
