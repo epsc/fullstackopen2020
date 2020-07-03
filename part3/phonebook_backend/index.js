@@ -62,9 +62,26 @@ const generateId = (persons) => {
 }
 
 app.post('/api/persons', (request, response) => {
-  const person = request.body
-  person.id = generateId(persons)
+  const body = request.body
   
+  // Handle missing name or number
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'Missing name or number'
+    })
+  }
+  // Handle if name is already in the phonebook
+  if (persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())) {
+    return response.status(400).json({
+      error: 'name must be unique'
+    })
+  }
+  // Create a person object and add to persons
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(persons)
+  }
   persons = persons.concat(person)
 
   response.json(person)
