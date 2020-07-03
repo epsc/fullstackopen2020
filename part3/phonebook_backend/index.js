@@ -3,7 +3,13 @@ const morgan = require('morgan')
 
 const app = express()
 
-app.use(morgan('tiny'))
+// Log data using morgan middleware (for the exercise only) 
+// Don't log personal data, even in the console, to avoid violating privacy laws!)
+morgan.token('data', (request, response) => {
+  console.log(request.body)
+  return JSON.stringify(request.body)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
   { 
