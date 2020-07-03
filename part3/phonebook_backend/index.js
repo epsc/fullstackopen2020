@@ -24,6 +24,8 @@ let persons = [
   }
 ]
 
+app.use(express.json())
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
@@ -44,6 +46,28 @@ app.get('/info', (request, response) => {
   const info = `Phonebook has info for ${numPersons} people`
   
   response.send(`<div>${info}</div><br /><div>${new Date()}</div>`)
+})
+
+const generateId = (persons) => {
+  const usedIds = persons.map(persons => persons.id)
+  const min = 1
+  const max = 999999
+  
+  // generate random Id, but make sure already used id is not used again
+  do {
+    id = Math.floor(Math.random() * (max - min) + min)
+  } while (usedIds.includes(id))
+
+  return id
+}
+
+app.post('/api/persons', (request, response) => {
+  const person = request.body
+  person.id = generateId(persons)
+  
+  persons = persons.concat(person)
+
+  response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
