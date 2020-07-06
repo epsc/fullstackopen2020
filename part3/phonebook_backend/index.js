@@ -1,12 +1,13 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
+app.use(cors())
 // Log data using morgan middleware (for the exercise only) 
 // Don't log personal data, even in the console, to avoid violating privacy laws!)
 morgan.token('data', (request, response) => {
-  console.log(request.body)
   return JSON.stringify(request.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
