@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const app = express()
 
+app.use(express.static('build'))
 app.use(cors())
 // Log data using morgan middleware (for the exercise only) 
 // Don't log personal data, even in the console, to avoid violating privacy laws!)
