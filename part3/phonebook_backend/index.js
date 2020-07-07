@@ -86,21 +86,23 @@ app.post('/api/persons', (request, response) => {
       error: 'Missing name or number'
     })
   }
-  // Handle if name is already in the phonebook
-  if (persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-  // Create a person object and add to persons
-  const person = {
+  //// Handle if name is already in the phonebook
+  //if (persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())) {
+  //  return response.status(400).json({
+  //    error: 'name must be unique'
+  //  })
+  //}
+
+  // Create a person object
+  const person = new Person({
     name: body.name,
     number: body.number,
     id: generateId(persons)
-  }
-  persons = persons.concat(person)
-
-  response.json(person)
+  })
+  // Save to database
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
