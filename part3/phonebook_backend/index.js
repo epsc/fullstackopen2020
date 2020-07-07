@@ -46,22 +46,22 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+        response.json(person)
+    })
+    .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
-  const numPersons = persons.length
-  const info = `Phonebook has info for ${numPersons} people`
-  
-  response.send(`<div>${info}</div><br /><div>${new Date()}</div>`)
+app.get('/info', (request, response, next) => {
+  Person.countDocuments()
+    .then(count => {
+      const info = `Phonebook has info for ${count} people`
+
+      response.send(`<div>${info}</div><br /><div>${new Date()}</div>`)
+    })
+    .catch(error => next(error))
 })
 
 const generateId = (persons) => {
@@ -112,7 +112,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: body.name,
     number: body.number
   }
-  
+
   Person.findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedNote => {
       response.json(updatedNote)
