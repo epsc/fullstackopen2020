@@ -77,21 +77,8 @@ const generateId = (persons) => {
   return id
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
-  // Handle missing name or number
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'Missing name or number'
-    })
-  }
-  //// Handle if name is already in the phonebook
-  //if (persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())) {
-  //  return response.status(400).json({
-  //    error: 'name must be unique'
-  //  })
-  //}
 
   // Create a person object
   const person = new Person({
@@ -100,9 +87,11 @@ app.post('/api/persons', (request, response) => {
     id: generateId(persons)
   })
   // Save to database
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  person.save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -134,6 +123,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+  if (error.name === 'ValidationError') {
+    return response.status(400).send({error: error.message })
   }
 
   next(error)
