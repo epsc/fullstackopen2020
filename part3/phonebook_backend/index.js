@@ -8,33 +8,33 @@ const app = express()
 
 app.use(express.static('build'))
 app.use(cors())
-// Log data using morgan middleware (for the exercise only) 
+// Log data using morgan middleware (for the exercise only)
 // Don't log personal data, even in the console, to avoid violating privacy laws!)
-morgan.token('data', (request, response) => {
+morgan.token('data', (request) => {
   return JSON.stringify(request.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
-  { 
-    "name": "Arto Hellas", 
-    "number": "040-123456",
-    "id": 1
+  {
+    'name': 'Arto Hellas',
+    'number': '040-123456',
+    'id': 1
   },
-  { 
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523",
-    "id": 2
+  {
+    'name': 'Ada Lovelace',
+    'number': '39-44-5323523',
+    'id': 2
   },
-  { 
-    "name": "Dan Abramov", 
-    "number": "12-43-234345",
-    "id": 3
+  {
+    'name': 'Dan Abramov',
+    'number': '12-43-234345',
+    'id': 3
   },
-  { 
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122",
-    "id": 4
+  {
+    'name': 'Mary Poppendieck',
+    'number': '39-23-6423122',
+    'id': 4
   }
 ]
 
@@ -49,7 +49,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
-        response.json(person)
+      response.json(person)
     })
     .catch(error => next(error))
 })
@@ -68,7 +68,8 @@ const generateId = (persons) => {
   const usedIds = persons.map(persons => persons.id)
   const min = 1
   const max = 999999
-  
+  let id = Math.floor(Math.random() * (max - min) + min)
+
   // generate random Id, but make sure already used id is not used again
   do {
     id = Math.floor(Math.random() * (max - min) + min)
@@ -111,7 +112,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -125,7 +126,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   }
   if (error.name === 'ValidationError') {
-    return response.status(400).send({error: error.message })
+    return response.status(400).send({ error: error.message })
   }
 
   next(error)

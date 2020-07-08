@@ -6,12 +6,12 @@ mongoose.set('useCreateIndex', true)
 
 const url = process.env.MONGODB_URI
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-  .then(result => {
-    console.log("Connected to the database")
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to the database')
   })
   .catch(error => {
-    console.log("Error connecting to the database", error.message)
+    console.log('Error connecting to the database', error.message)
   })
 
 const personSchema = new mongoose.Schema({
