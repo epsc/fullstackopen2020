@@ -20,6 +20,15 @@ const App = () => {
       })   
   }, [])
 
+  const displayNotification = (status, message) => {
+    setNotification({
+      status: status,
+      message: message
+    })
+    // Remove notification message after 5 seconds
+    setTimeout(() => {setNotification(null)}, 5000)
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
 
@@ -34,20 +43,21 @@ const App = () => {
           .update(changedPerson.id, changedPerson)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
-            setNotification({
-              status: 'pass',
-              message: `The phone number of ${returnedPerson.name} has been updated`
-            })
+            displayNotification(
+              'pass',
+              `The phone number of ${returnedPerson.name} has been updated`
+            )
           })
           .catch(error => {
-            setPersons(persons.filter(person => person.id !== changedPerson.id))
-            setNotification({
-              status: 'error',
-              message: `Information of ${changedPerson.name} has already been removed from the server`
-            })
-            setTimeout(() => {
-              setNotification(null)
-            }, 5000)
+            if (error.response.data.error.startsWith('Validation failed')) {
+              displayNotification('error', error.response.data.error)
+            } else {
+              setPersons(persons.filter(person => person.id !== changedPerson.id))
+              displayNotification(
+                'error',
+                `Information of ${changedPerson.name} has already been removed from the server`
+              )
+            }
           })
       }
     } else {
@@ -56,19 +66,17 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          setNotification({
-            status: 'pass',
-            message: `${returnedPerson.name} added`
-          })
+          displayNotification(
+            'pass',
+            `${returnedPerson.name} added`
+          )
+        })
+        .catch(error => {
+          displayNotification('error', error.response.data.error)
         })
     }
     setNewName('')
     setNewNumber('')
-
-    // Remove notification message after 5 seconds
-    setTimeout(() => {
-      setNotification(null)
-    }, 5000)
   }
 
   const deletePerson = (id) => {
