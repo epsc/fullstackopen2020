@@ -132,3 +132,27 @@ describe('most blogs', () => {
     expect(listHelper.mostBlogs(blogs)).toEqual(mostBlogs)
   })
 })
+
+describe('most likes', () => {
+  const mostLikes = {
+    author: 'Edsger W. Dijkstra',
+    likes: 17
+  }
+
+  const mostLikesSingle = {
+    author: 'VS Code Rest Client',
+    likes: 2
+  }
+
+  test('in an empty list is null', () => {
+    expect(listHelper.mostLikes([])).toBeNull()
+  })
+
+  test('in a list with a single entry returns the author and likes of the entry', () => {
+    expect(listHelper.mostLikes(singleEntry)).toEqual(mostLikesSingle)
+  })
+
+  test('is the author with the highest sum of likes across all the posts of the author', () => {
+    expect(listHelper.mostLikes(blogs)).toEqual(mostLikes)
+  })
+})

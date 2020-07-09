@@ -57,9 +57,41 @@ const mostBlogs = (blogs) => {
   return mostBlogs
 }
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return null
+  }
+
+  let likesList = []
+  let authorIndex = null
+
+  blogs
+    .forEach(blog => {
+      // Update likes count if the author is already in the list, otherwise append the author and count to the list
+      if (likesList.map(likes => likes.author).includes(blog.author)) {
+        authorIndex = likesList.findIndex(likes => likes.author === blog.author)
+        likesList[authorIndex].likes += blog.likes
+      } else {
+        likesList = likesList.concat(blog)
+      }
+    })
+
+  // Get the author with the highest likes
+  const max = _.maxBy(likesList, data => data.likes)
+
+  // Extract only the author and likes from the data
+  const mostLikes = {
+    author: max.author,
+    likes: max.likes
+  }
+
+  return mostLikes
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
