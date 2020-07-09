@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "A new blog post",
+  "author": "VS Code Rest Client",
+  "url": "http://newblogpost.com/newPost",
+  "likes": 0
+}
