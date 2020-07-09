@@ -107,3 +107,28 @@ describe('favorite blog', () => {
     expect(listHelper.favoriteBlog(blogs)).toEqual(highestVotes)
   })
 })
+
+
+describe('most blogs', () => {
+  const mostBlogs = {
+    author: 'Robert C. Martin',
+    blogs: 3
+  }
+
+  const mostBlogsSingle = {
+    author: 'VS Code Rest Client',
+    blogs: 1
+  }
+
+  test('when list is empty returns null', () => {
+    expect(listHelper.mostBlogs([])).toEqual(null)
+  })
+
+  test('when list has one entry returns the entry author with a blog count of 1', () => {
+    expect(listHelper.mostBlogs(singleEntry)).toEqual(mostBlogsSingle)
+  })
+
+  test('returns the author and number of blogs of the author with the most blogs', () => {
+    expect(listHelper.mostBlogs(blogs)).toEqual(mostBlogs)
+  })
+})
