@@ -50,14 +50,11 @@ test('blog entry is successfully created', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
-  // last index is of array is length - 1. New array length is + 1 so last index is now equal to previous length value
-  const addedBlog = response.body[helper.initialBlogs.length]
+  const endBlogs = await helper.blogListInDb()
+  const titles =  endBlogs.map(blogs => blogs.title)
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
-  expect(addedBlog).toHaveProperty('title', 'A new blog post')
-  expect(addedBlog).toHaveProperty('author', 'VS Code Rest Client')
-  expect(addedBlog).toHaveProperty('url', 'http://newblogpost.com/newPost')
+  expect(endBlogs).toHaveLength(helper.initialBlogs.length + 1)
+  expect(titles).toContain('A new blog post')
 })
 
 test('likes default to 0 if the likes property is missing from the POST request', async () => {
@@ -118,6 +115,28 @@ test('single blog entry is successfully deleted', async () => {
   const ids = endBlogs.map(r => r.id)
 
   expect(ids).not.toContain(blogToDelete.id)
+})
+
+test('likes of a blog entry is successfully increased', async () => {
+  const startBlog = helper.initialBlogs[0]
+
+  const updatedBlog = {
+    title: startBlog.title,
+    author: startBlog.author,
+    url: startBlog.url,
+    likes: startBlog.likes + 1
+  }
+
+  await api
+    .put(`/api/blogs/${startBlog._id}`)
+    .send(updatedBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const endBlogs = await helper.blogListInDb()
+  const endBlogsLikes = endBlogs.map(blog => blog.likes)
+
+  expect(endBlogsLikes).toContain(8)
 })
 
 afterAll(() => {
