@@ -5,6 +5,7 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const { initialBlogs } = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -58,6 +59,25 @@ test('blog entry is successfully created', async () => {
   expect(addedBlog).toHaveProperty('title', 'A new blog post')
   expect(addedBlog).toHaveProperty('author', 'VS Code Rest Client')
   expect(addedBlog).toHaveProperty('url', 'http://newblogpost.com/newPost')
+})
+
+test('likes default to 0 if the likes property is missing from the POST request', async () => {
+  const newBlogNoLikes = {
+    title: 'A new blog post',
+    author: 'VS Code Rest Client',
+    url: 'http://newblogpost.com/newPost',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogNoLikes)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const addedBlog =response.body[initialBlogs.length]
+
+  expect(addedBlog).toHaveProperty('likes', 0)
 })
 
 afterAll(() => {
