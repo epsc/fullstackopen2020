@@ -28,6 +28,14 @@ test('all blog posts are retrieved', async () => {
   expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
+test('blog entry id is defined as id, not as _id', async () => {
+  const response = await api.get('/api/blogs')
+  const retrievedBlog = response.body[0]
+
+  expect(retrievedBlog.id).toBeDefined()
+  expect(retrievedBlog._id).not.toBeDefined()
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
