@@ -80,6 +80,30 @@ test('likes default to 0 if the likes property is missing from the POST request'
   expect(addedBlog).toHaveProperty('likes', 0)
 })
 
+test('Respond with status 400 Bad Request if title is missing from request', async () => {
+  const noTitle = {
+    author: 'VS Code Rest Client',
+    url: 'http://newblogpost.com/newPost',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(noTitle)
+    .expect(400)
+})
+
+test('Respond with status 400 Bad Request if url is missing from request', async () => {
+  const noUrl = {
+    title: 'A new blog post',
+    author: 'VS Code Rest Client',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(noUrl)
+    .expect(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
