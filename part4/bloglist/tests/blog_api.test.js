@@ -5,7 +5,6 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
-const { initialBlogs } = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -75,7 +74,7 @@ test('likes default to 0 if the likes property is missing from the POST request'
     .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
-  const addedBlog =response.body[initialBlogs.length]
+  const addedBlog =response.body[helper.initialBlogs.length]
 
   expect(addedBlog).toHaveProperty('likes', 0)
 })
@@ -102,6 +101,23 @@ test('Respond with status 400 Bad Request if url is missing from request', async
     .post('/api/blogs')
     .send(noUrl)
     .expect(400)
+})
+
+test('single blog entry is successfully deleted', async () => {
+  const startBlogs = await helper.blogListInDb()
+  const blogToDelete = startBlogs[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const endBlogs = await helper.blogListInDb()
+
+  expect(endBlogs).toHaveLength(helper.initialBlogs.length - 1)
+
+  const ids = endBlogs.map(r => r.id)
+
+  expect(ids).not.toContain(blogToDelete.id)
 })
 
 afterAll(() => {
