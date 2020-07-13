@@ -9,8 +9,16 @@ const Blog = require('../models/blog')
 beforeEach(async () => {
   await Blog.deleteMany({})
 
+  // Initial user for required authentication
+  const initialUser = await helper.createInitialUser('jdlc', 'password')
+
   const blogObjects = helper.initialBlogs
-    .map(blog => new Blog(blog))
+    .map(blog => {
+      // add user property to initial blogs
+      blog.user = initialUser._id
+      return new Blog(blog)
+    })
+  //console.log(blogObjects)
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
 })
@@ -36,7 +44,31 @@ test('blog entry id is defined as id, not as _id', async () => {
   expect(retrievedBlog._id).not.toBeDefined()
 })
 
-test('blog entry is successfully created', async () => {
+test('adding a blog fails with proper status code if token is not provided', async () => {
+  const blogsAtStart = await helper.usersInDb()
+
+  const newBlog = {
+    title: 'A new blog post',
+    author: 'VS Code Rest Client',
+    url: 'http://newblogpost.com/newPost',
+    likes: 2,
+  }
+
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+    .expect('Content-Type', /application\/json/)
+
+  expect(result.body.error).toContain('invalid token')
+
+  const blogsAtEnd = await helper.usersInDb()
+  expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+})
+
+test('creating a new post is successful with complete input and correct token', async () => {
+  const token = await helper.initialUserToken('jdlc')
+
   const newBlog = {
     title: 'A new blog post',
     author: 'VS Code Rest Client',
@@ -46,6 +78,7 @@ test('blog entry is successfully created', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -58,6 +91,8 @@ test('blog entry is successfully created', async () => {
 })
 
 test('likes default to 0 if the likes property is missing from the POST request', async () => {
+  const token = await helper.initialUserToken('jdlc')
+
   const newBlogNoLikes = {
     title: 'A new blog post',
     author: 'VS Code Rest Client',
@@ -66,6 +101,7 @@ test('likes default to 0 if the likes property is missing from the POST request'
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlogNoLikes)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -76,7 +112,9 @@ test('likes default to 0 if the likes property is missing from the POST request'
   expect(addedBlog).toHaveProperty('likes', 0)
 })
 
-test('Respond with status 400 Bad Request if title is missing from request', async () => {
+test('Respond with status 400 Bad Request if title is missing from POST request', async () => {
+  const token = await helper.initialUserToken('jdlc')
+
   const noTitle = {
     author: 'VS Code Rest Client',
     url: 'http://newblogpost.com/newPost',
@@ -84,11 +122,14 @@ test('Respond with status 400 Bad Request if title is missing from request', asy
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(noTitle)
     .expect(400)
 })
 
-test('Respond with status 400 Bad Request if url is missing from request', async () => {
+test('Respond with status 400 Bad Request if url is missing from POST request', async () => {
+  const token = await helper.initialUserToken('jdlc')
+
   const noUrl = {
     title: 'A new blog post',
     author: 'VS Code Rest Client',
@@ -96,6 +137,7 @@ test('Respond with status 400 Bad Request if url is missing from request', async
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(noUrl)
     .expect(400)
 })
@@ -104,8 +146,11 @@ test('single blog entry is successfully deleted', async () => {
   const startBlogs = await helper.blogListInDb()
   const blogToDelete = startBlogs[0]
 
+  const token = await helper.initialUserToken('jdlc')
+
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `bearer ${token}`)
     .expect(204)
 
   const endBlogs = await helper.blogListInDb()
