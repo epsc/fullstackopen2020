@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "App separated into its own module",
+  "title": "Another one by some user",
   "author": "VS Code Rest Client",
-  "url": "http://newblogpost.com/separateAppModule",
+  "url": "http://newblogpost.com/anyUserCreated",
   "likes": 0
 }
