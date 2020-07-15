@@ -12,12 +12,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [notification, setNotification] = useState(null)
 
-  const noteFormRef = useRef()
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -41,18 +38,6 @@ const App = () => {
     })
 
     setTimeout(() => setNotification(null), 5000)
-  }
-
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value)
-  }
-
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value)
   }
   
   const handleLogin = async (event) => {
@@ -84,21 +69,12 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-
+  const addBlog = async (blogObject) => {
     try {
-      const newBlog = await blogService.create({
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl
-      })
+      const newBlog = await blogService.create(blogObject)
 
       setBlogs(blogs.concat(newBlog))
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
-      noteFormRef.current.toggleVisibility()
+      blogFormRef.current.toggleVisibility()
       showNotification(
         'pass',
         `A new blog ${newBlog.title} by ${newBlog.author} added`,
@@ -113,16 +89,8 @@ const App = () => {
   }
 
   const noteForm = () => (
-    <Togglable buttonLabel="add blog" ref={noteFormRef}>
-      <BlogForm 
-        newTitle={newTitle}
-        newAuthor={newAuthor}
-        newUrl={newUrl}
-        handleTitleChange={handleTitleChange}
-        handleAuthorChange={handleAuthorChange}
-        handleUrlChange={handleUrlChange}
-        addBlog={addBlog}
-      />
+    <Togglable buttonLabel="add blog" ref={blogFormRef}>
+      <BlogForm createBlog={addBlog} />
     </Togglable>
   )
 
