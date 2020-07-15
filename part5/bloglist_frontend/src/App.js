@@ -88,6 +88,27 @@ const App = () => {
     }
   }
 
+  const likeBlog = async (id) => {
+    try {
+    const blog = blogs.find(blog => blog.id === id)
+    const likedBlog = {
+      user: blog.user.id,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+
+    const returnedBlog = await blogService.like(id, likedBlog)
+    setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    } catch (exception) {
+      showNotification(
+        'error',
+        `Failed to update likes: ${exception.response.data.error}`
+      )
+    }
+  }
+
   const noteForm = () => (
     <Togglable buttonLabel="add blog" ref={blogFormRef}>
       <BlogForm createBlog={addBlog} />
@@ -117,7 +138,7 @@ const App = () => {
         </p>
       {noteForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={() => likeBlog(blog.id)} />
       )}
     </div>
   )

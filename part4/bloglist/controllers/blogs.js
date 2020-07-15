@@ -39,13 +39,17 @@ blogsRouter.delete('/:id', async (request, response) => {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
 
+  const user = await User.findById(decodedToken.id)
   const blog = await Blog.findById(request.params.id)
 
   if (blog.user.toString() !== decodedToken.id) {
     return response.status(401).json({ error: 'unauthorized to delete this blog post' })
   }
 
-  await Blog.findByIdAndDelete(request.params.id)
+  await Blog.findByIdAndDelete(request.params.id)   // can also use blog.remove() since it was already loaded into blog param
+  user.blogs = user.blogs.filter(blog => blog._id.toString() !== request.params.id.toString())
+
+  await user.save()
   response.status(204).end()
 })
 
@@ -59,7 +63,9 @@ blogsRouter.put('/:id', async (request, response) => {
     likes: body.likes
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const updatedBlog = await Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true })
+    .populate('user', { username: 1, name: 1, id: 1 })
 
   response.json(updatedBlog)
 })

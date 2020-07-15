@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, addLike }) => {
   const [visible, setVisible] = useState(false)
 
   const showWhenVisible = { display: visible ? '' : 'none' }
   const viewButtonLabel = visible ? 'hide' : 'view'
+
+  // Some of the default blog posts have no user, this is to assign a default value in this case.
+  // Should be unecessary, and could be removed once those are removed from db.
+  const username = blog.user ? blog.user.name : "No user"
 
   const blogStyle = {
     border: 'solid',
@@ -18,7 +22,6 @@ const Blog = ({ blog }) => {
     setVisible(!visible)
   }
 
-  const username = blog.user ? blog.user.name : "No user"
   return (
   <div style={blogStyle}>
     <div>
@@ -27,9 +30,11 @@ const Blog = ({ blog }) => {
     </div>
 
     <div style={showWhenVisible}>
-      {blog.url} 
-      <br />
-      likes {blog.likes} <button>like</button>
+      {blog.url} <br />
+      likes {blog.likes} 
+      <button onClick={addLike}>
+        like
+      </button>
       <br />
       {username}
     </div>
