@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setSortedBlogs( blogs )
     )
   }, [])
 
@@ -30,6 +30,11 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const setSortedBlogs = (blogs) => {
+    const sorted = blogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(sorted)
+  }
 
   const showNotification = (status, message) => {
     setNotification({
@@ -73,7 +78,7 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject)
 
-      setBlogs(blogs.concat(newBlog))
+      setSortedBlogs(blogs.concat(newBlog))
       blogFormRef.current.toggleVisibility()
       showNotification(
         'pass',
@@ -100,7 +105,7 @@ const App = () => {
     }
 
     const returnedBlog = await blogService.like(id, likedBlog)
-    setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
     } catch (exception) {
       showNotification(
         'error',
