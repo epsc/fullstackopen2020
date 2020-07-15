@@ -30,6 +30,8 @@ blogsRouter.post('/', async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
+  // Populate user field after saving so that response format is consistent with other routes
+  await savedBlog.populate('user', { username: 1, name: 1, id: 1 }).execPopulate()
   response.json(savedBlog)
 })
 

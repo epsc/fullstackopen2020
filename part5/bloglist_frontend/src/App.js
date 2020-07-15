@@ -114,6 +114,28 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (id) => {
+    const deleteBlog = blogs.find(blog => blog.id === id)
+    const confirmation = window.confirm(`Delete ${deleteBlog.title} by ${deleteBlog.author}?`)
+
+    if (confirmation) {
+      try {
+        await blogService.remove(id)
+        setSortedBlogs(blogs.filter(blog => blog.id !== deleteBlog.id))
+
+        showNotification(
+          'pass',
+          `Successfully deleted ${deleteBlog.title} by ${deleteBlog.author}`
+        )
+      } catch (exception) {
+        showNotification(
+          'error',
+          `Failed to delete blog post: ${exception.response.data.error}`
+        )
+      }
+    }
+  }
+
   const noteForm = () => (
     <Togglable buttonLabel="add blog" ref={blogFormRef}>
       <BlogForm createBlog={addBlog} />
@@ -143,7 +165,13 @@ const App = () => {
         </p>
       {noteForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} addLike={() => likeBlog(blog.id)} />
+        <Blog 
+          key={blog.id}
+          user={user}
+          blog={blog}
+          addLike={() => likeBlog(blog.id)}
+          deleteBlog={() => deleteBlog(blog.id)}
+        />
       )}
     </div>
   )
