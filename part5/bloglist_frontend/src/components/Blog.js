@@ -34,7 +34,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
         <button onClick={toggleVisibility}>{viewButtonLabel}</button>
       </div>
 
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="hideable">
         {blog.url} <br />
         likes {blog.likes}
         <button onClick={addLike}>like</button><br />
