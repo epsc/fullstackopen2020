@@ -44,7 +44,7 @@ const App = () => {
 
     setTimeout(() => setNotification(null), 5000)
   }
-  
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -95,17 +95,17 @@ const App = () => {
 
   const likeBlog = async (id) => {
     try {
-    const blog = blogs.find(blog => blog.id === id)
-    const likedBlog = {
-      user: blog.user.id,
-      likes: blog.likes + 1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
-    }
+      const blog = blogs.find(blog => blog.id === id)
+      const likedBlog = {
+        user: blog.user.id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url
+      }
 
-    const returnedBlog = await blogService.like(id, likedBlog)
-    setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      const returnedBlog = await blogService.like(id, likedBlog)
+      setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
     } catch (exception) {
       showNotification(
         'error',
@@ -144,7 +144,7 @@ const App = () => {
 
   if (user === null) {
     return (
-      <LoginForm 
+      <LoginForm
         notification={notification}
         handleLogin={handleLogin}
         username={username}
@@ -159,13 +159,13 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification notification={notification} />
-        <p>
-          {user.name} logged in
-          <button onClick={handleLogout}>logout</button>
-        </p>
+      <p>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+      </p>
       {noteForm()}
       {blogs.map(blog =>
-        <Blog 
+        <Blog
           key={blog.id}
           user={user}
           blog={blog}

@@ -12,7 +12,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   const blogUser = blog.user ? blog.user.name : 'No user'
   const blogUsername = blog.user ? blog.user.username : 'No id'
 
-  // Only display blog if 
+  // Only display blog if
   const showForBlogPosterOnly = { display: user.username === blogUsername ? '' : 'none' }
 
   const blogStyle = {
@@ -28,25 +28,25 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   }
 
   return (
-  <div style={blogStyle}>
-    <div>
-      {blog.title} {blog.author}
-      <button onClick={toggleVisibility}>{viewButtonLabel}</button>
-    </div>
+    <div style={blogStyle}>
+      <div>
+        {blog.title} {blog.author}
+        <button onClick={toggleVisibility}>{viewButtonLabel}</button>
+      </div>
 
-    <div style={showWhenVisible}>
-      {blog.url} <br />
-      likes {blog.likes} 
-      <button onClick={addLike}>like</button><br />
-      {blogUser}<br />
-      <button
-        style={showForBlogPosterOnly}
-        onClick={deleteBlog}
-      >
-        delete
-      </button>
+      <div style={showWhenVisible}>
+        {blog.url} <br />
+        likes {blog.likes}
+        <button onClick={addLike}>like</button><br />
+        {blogUser}<br />
+        <button
+          style={showForBlogPosterOnly}
+          onClick={deleteBlog}
+        >
+          delete
+        </button>
+      </div>
     </div>
-  </div>
   )
 }
 
