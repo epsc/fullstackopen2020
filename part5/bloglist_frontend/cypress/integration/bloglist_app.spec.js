@@ -37,15 +37,15 @@ describe('Blog app', function() {
   })
 
   describe('when logged in', function() {
-    beforeEach(function () {
+    beforeEach(function() {
       cy.login({ username: 'jdlc', password: 'password' })
     })
 
     it('a user can add a blog', function() {
       cy.contains('add blog').click()
-      cy.get('[name="title"]').type('Added using cypress')
-      cy.get('[name="author"]').type('Cyp Ress')
-      cy.get('[name="url"]').type('http://somesite.com/cypressTest')
+      cy.get('input[name="title"]').type('Added using cypress')
+      cy.get('input[name="author"]').type('Cyp Ress')
+      cy.get('input[name="url"]').type('http://somesite.com/cypressTest')
       cy.get('#create-button').click()
 
       cy.contains('Added using cypress Cyp Ress')
@@ -112,6 +112,44 @@ describe('Blog app', function() {
       cy.contains('view').click()
 
       cy.get('#delete-button').should('not.be.visible')
+    })
+
+    describe('when there are multiple blogs', function() {
+      beforeEach(function() {
+      // Create blogs and add different amount of likes
+        cy.createBlog({
+          title: 'Blog with no likes',
+          author: 'Tester Zero',
+          url: 'http://blog.com/zero',
+        })
+        cy.createBlog({
+          title: 'Blog with one like',
+          author: 'Tester One',
+          url: 'http://blog.com/one',
+        })
+        cy.createBlog({
+          title: 'Blog with two likes',
+          author: 'Tester Two',
+          url: 'http://blog.com/two',
+        })
+
+        // Add likes, but wait for put requests to finish before adding the next like
+        cy.server()
+        cy.route('PUT','/api/blogs/*').as('addLike')
+        cy.addLike('Blog with one like')
+        cy.wait('@addLike').addLike('Blog with two likes')
+        cy.wait('@addLike').addLike('Blog with two likes')
+        cy.wait('@addLike')
+      })
+
+      it('blogs are ordered according to likes with the most likes being first', function () {
+        // The first result should have the highest likes, last should have the least.
+        // Traverse through the blog divs checking in order
+        cy.contains('Blog with').parent().as('firstBlog')
+        cy.get('@firstBlog').should('contain', 'likes 2')
+        cy.get('@firstBlog').next().should('contain', 'likes 1')
+        cy.get('@firstBlog').next().next().should('contain', 'likes 0')
+      })
     })
   })
 })

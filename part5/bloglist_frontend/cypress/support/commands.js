@@ -45,3 +45,20 @@ Cypress.Commands.add('createBlog', ({ title, author, url }) => {
 
   cy.visit('http://localhost:3000')
 })
+
+Cypress.Commands.add('addLike', (title) => {
+  cy.contains(title).parent().find('#view-button').as('viewButton')
+
+  // Only click the button if button text is 'view' not 'hide'
+  cy.get('@viewButton').then(($button) => {
+    if($button.text().includes('view')) {
+      cy.get('@viewButton').click()
+    }
+  })
+
+  cy.contains(title)
+    .parent()
+    .within(() => {
+      cy.get('#like-button').click()
+    })
+})
