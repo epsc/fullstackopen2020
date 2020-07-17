@@ -41,7 +41,7 @@ describe('Blog app', function() {
       cy.login({ username: 'jdlc', password: 'password' })
     })
 
-    it.only('a user can add a blog', function() {
+    it('a user can add a blog', function() {
       cy.contains('add blog').click()
       cy.get('[name="title"]').type('Added using cypress')
       cy.get('[name="author"]').type('Cyp Ress')
@@ -49,6 +49,26 @@ describe('Blog app', function() {
       cy.get('#create-button').click()
 
       cy.contains('Added using cypress Cyp Ress')
+    })
+
+    it.only('a user can like a blog', function() {
+      cy.createBlog({
+        title: 'Add likes to this post',
+        author: 'Cypress Test',
+        url: 'http://link.com/'
+      })
+
+      cy.contains('Add likes to this post')
+        .contains('view')
+        .click()
+      cy.contains('Add likes to this post')
+        .parent()
+        .contains('likes 0')
+      cy.get('#like-button').click()
+
+      cy.contains('Add likes to this post')
+        .parent()
+        .contains('likes 1')
     })
   })
 })
