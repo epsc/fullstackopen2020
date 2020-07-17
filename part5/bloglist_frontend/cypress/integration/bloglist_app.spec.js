@@ -51,7 +51,7 @@ describe('Blog app', function() {
       cy.contains('Added using cypress Cyp Ress')
     })
 
-    it.only('a user can like a blog', function() {
+    it('a user can like a blog', function() {
       cy.createBlog({
         title: 'Add likes to this post',
         author: 'Cypress Test',
@@ -69,6 +69,49 @@ describe('Blog app', function() {
       cy.contains('Add likes to this post')
         .parent()
         .contains('likes 1')
+    })
+
+    it('the user that created a blog can delete it', function() {
+      cy.createBlog({
+        title: 'This post will be removed',
+        author: 'Tester',
+        url: 'http://site.com/'
+      })
+
+      cy.contains('This post will be removed')
+        .contains('view')
+        .click()
+      cy.contains('delete')
+        .click()
+
+      cy.get('.pass').contains('Successfully deleted This post will be removed')
+    })
+
+    it('the user can not delete a blog another user created', function() {
+      // Create a second user
+      const secondUser = {
+        name: 'Maria Clara de los Santos',
+        username: 'mcdls',
+        password: 'password'
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/', secondUser)
+      cy.visit('http://localhost:3000')
+
+
+      // Create a blog using the initial user then logout
+      cy.createBlog({
+        title: 'Another user cannot delete this',
+        author: 'Tester',
+        url: 'http://site.com/'
+      })
+
+      cy.contains('logout').click()
+
+      // Log in as the second user, the delete button should not be present
+      cy.login({ username: secondUser.username , password: secondUser.password })
+      cy.contains('view').click()
+
+      cy.get('#delete-button').should('not.be.visible')
     })
   })
 })

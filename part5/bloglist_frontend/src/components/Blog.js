@@ -40,6 +40,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
         <button id="like-button" onClick={addLike}>like</button><br />
         {blogUser}<br />
         <button
+          id="delete-button"
           style={showForBlogPosterOnly}
           onClick={deleteBlog}
         >
