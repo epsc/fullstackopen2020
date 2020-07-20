@@ -1,13 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { createAnecdote } from './reducers/anecdoteReducer'
-
-const voteAnecdote = (id) => {
-  return {
-    type: 'VOTE',
-    data: { id }
-  }
-}
+import { createAnecdote, voteAnecdote } from './reducers/anecdoteReducer'
 
 const App = () => {
   const anecdotes = useSelector(state => state)
