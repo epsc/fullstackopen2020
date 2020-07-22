@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
-import { setNotification, removeNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
   const anecdotes = useSelector(state => state.anecdotes)
@@ -15,8 +15,7 @@ const AnecdoteList = () => {
     dispatch(voteAnecdote(anecdote))
     
     // notification
-    dispatch(setNotification(`you voted for '${anecdote.content}'`))
-    setTimeout(() => dispatch(removeNotification()), 5000)
+    dispatch(setNotification(`you voted for '${anecdote.content}'`, 5))
   }
 
   // Sort function for anecdotes in descending order
