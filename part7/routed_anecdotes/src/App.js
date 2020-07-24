@@ -82,10 +82,17 @@ const CreateNew = (props) => {
     props.showNotification(`a new anecdote "${content.value}" created`)
   }
 
+  const handleReset = (e) => {
+    e.preventDefault()
+    content.onChange(e)
+    author.onChange(e)
+    info.onChange(e)
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form id='createAnecdoteForm' onSubmit={handleSubmit}>
         <div>
           content
           <input name='content' {...content} />
@@ -99,6 +106,7 @@ const CreateNew = (props) => {
           <input name='info' {...info} />
         </div>
         <button>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
