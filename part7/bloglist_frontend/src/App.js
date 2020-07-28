@@ -8,13 +8,14 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { setNotification, removeNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const blogs = useSelector(state => state.blogs)
+
   const dispatch = useDispatch()
 
   const blogFormRef = useRef()
@@ -94,19 +95,16 @@ const App = () => {
     }
   }
 
-  const likeBlog = async (id) => {
+  const handleLikeBlog = async (id) => {
     try {
       const blog = blogs.find(blog => blog.id === id)
       const likedBlog = {
+        ...blog,
         user: blog.user.id,
         likes: blog.likes + 1,
-        author: blog.author,
-        title: blog.title,
-        url: blog.url
       }
 
-      const returnedBlog = await blogService.like(id, likedBlog)
-      //setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      dispatch(likeBlog(likedBlog))
     } catch (exception) {
       showNotification(
         'error',
@@ -121,8 +119,7 @@ const App = () => {
 
     if (confirmation) {
       try {
-        await blogService.remove(id)
-        //setSortedBlogs(blogs.filter(blog => blog.id !== deleteBlog.id))
+        dispatch(removeBlog(id))
 
         showNotification(
           'pass',
@@ -171,7 +168,7 @@ const App = () => {
           key={blog.id}
           user={user}
           blog={blog}
-          addLike={() => likeBlog(blog.id)}
+          addLike={() => handleLikeBlog(blog.id)}
           deleteBlog={() => deleteBlog(blog.id)}
         />
       )}
