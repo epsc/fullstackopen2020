@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -8,22 +8,20 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { setNotification, removeNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
+  const blogs = useSelector(state => state.blogs)
   const dispatch = useDispatch()
 
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setSortedBlogs( blogs )
-    )
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistappUser')
@@ -33,11 +31,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-
-  const setSortedBlogs = (blogs) => {
-    const sorted = blogs.sort((a, b) => b.likes - a.likes)
-    setBlogs(sorted)
-  }
 
   let timeoutId
   const showNotification = (status, message) => {
@@ -83,15 +76,14 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = async (blogObject) => {
+  const addBlog = async (blog) => {
     try {
-      const newBlog = await blogService.create(blogObject)
+      dispatch(createBlog(blog))
 
-      setSortedBlogs(blogs.concat(newBlog))
       blogFormRef.current.toggleVisibility()
       showNotification(
         'pass',
-        `A new blog ${newBlog.title} by ${newBlog.author} added`,
+        `A new blog ${blog.title} by ${blog.author} added`,
       )
     } catch (exception) {
       showNotification(
@@ -114,7 +106,7 @@ const App = () => {
       }
 
       const returnedBlog = await blogService.like(id, likedBlog)
-      setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      //setSortedBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
     } catch (exception) {
       showNotification(
         'error',
@@ -130,7 +122,7 @@ const App = () => {
     if (confirmation) {
       try {
         await blogService.remove(id)
-        setSortedBlogs(blogs.filter(blog => blog.id !== deleteBlog.id))
+        //setSortedBlogs(blogs.filter(blog => blog.id !== deleteBlog.id))
 
         showNotification(
           'pass',
@@ -163,6 +155,8 @@ const App = () => {
     )
   }
 
+  const sortByLikes = (a, b) => b.likes - a.likes
+
   return (
     <div>
       <h2>blogs</h2>
@@ -172,7 +166,7 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </p>
       {noteForm()}
-      {blogs.map(blog =>
+      {blogs.sort(sortByLikes).map(blog =>
         <Blog
           key={blog.id}
           user={user}
