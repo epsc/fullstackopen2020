@@ -85,6 +85,7 @@ describe('Blog app', function() {
         .click()
 
       cy.get('.pass').contains('Successfully deleted This post will be removed')
+      cy.get('#root').should('not.contain', 'This post will be removed Tester')
     })
 
     it('the user can not delete a blog another user created', function() {

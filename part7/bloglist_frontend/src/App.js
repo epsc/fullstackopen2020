@@ -9,12 +9,13 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import { setNotification, removeNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
+import { setUser, clearUser } from './reducers/currentUserReducer'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.currentUser)
 
   const dispatch = useDispatch()
 
@@ -28,10 +29,11 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   let timeoutId
   const showNotification = (status, message) => {
@@ -60,7 +62,7 @@ const App = () => {
       )
 
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -74,7 +76,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBloglistappUser')
-    setUser(null)
+    dispatch(clearUser())
   }
 
   const addBlog = async (blog) => {
