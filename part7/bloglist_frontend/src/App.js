@@ -10,6 +10,7 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import Users from './components/Users'
+import User from './components/User'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { setNotification, removeNotification } from './reducers/notificationReducer'
@@ -171,6 +172,9 @@ const App = () => {
       </p>
       <Router>
         <Switch>
+          <Route path="/users/:id">
+            <User />
+          </Route>
           <Route path="/users">
             <Users />
           </Route>
