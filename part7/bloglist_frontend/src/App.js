@@ -7,6 +7,7 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import NavigationBar from './components/NavigationBar'
 import Users from './components/Users'
 import User from './components/User'
 import blogService from './services/blogs'
@@ -169,12 +170,12 @@ const App = () => {
 
   return (
     <div>
+      <NavigationBar
+        user={user}
+        handleLogout={handleLogout}
+      />
       <h2>blogs</h2>
       <Notification />
-      <p>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </p>
 
       <Switch>
         <Route path="/users/:id">
