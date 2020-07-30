@@ -190,6 +190,7 @@ const App = () => {
             blog={blog}
             addLike={() => handleLikeBlog(blog.id)}
             deleteBlog={() => deleteBlog(blog.id)}
+            showNotification={showNotification}
           />
         </Route>
         <Route path="/">

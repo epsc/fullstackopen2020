@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
+import { addCommentToBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blog, addLike, deleteBlog, user }) => {
+const Blog = ({ blog, addLike, deleteBlog, user, showNotification }) => {
+  const [newComment, setNewComment] = useState('')
+  const dispatch = useDispatch()
+
   // to remove error when navigating directly to single user route and data has not been received yet
   if (!blog) {
     return null
@@ -14,6 +19,27 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
 
   // Only display if the blog was posted by the currently logged in user (delete button)
   const showForBlogPosterOnly = { display: user.username === blogUsername ? '' : 'none' }
+
+  const handleAddComment = async (event) => {
+    event.preventDefault()
+    try {
+      dispatch(addCommentToBlog(blog.id, {
+        comment: newComment
+      }))
+
+      setNewComment('')
+      showNotification(
+        'pass',
+        'Comment successfully added'
+      )
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
+  const handleCommentChange = (event) => {
+    setNewComment(event.target.value)
+  }
 
   return (
     <div>
@@ -38,6 +64,17 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
       <br />
 
       <h3>Comments</h3>
+      <form onSubmit={handleAddComment}>
+        <div>
+          <input
+            type="text"
+            value={newComment}
+            name="comment"
+            onChange={handleCommentChange}
+          />
+          <button type="submit">add comment</button>
+        </div>
+      </form>
       {(blog.comments.length !== 0) &&
         <div>
           <ul>
