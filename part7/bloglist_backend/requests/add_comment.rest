@@ -1,0 +1,7 @@
+POST http://localhost:3003/api/blogs/5f2293b6e39cee0b7c8221f0/comments
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpkbGMiLCJpZCI6IjVmMGMyODgzNDA3YjlmNDE1Y2Q2MGQ4NSIsImlhdCI6MTU5NjA5NzQzMX0.9KQjfysvprYST17EIFo4ZFTxXgLBuitcM1R1S8epmxs
+
+{
+  "comment": "This is a new comment"
+}

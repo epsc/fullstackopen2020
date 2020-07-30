@@ -35,6 +35,18 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
       >
         delete
       </button>
+      <br />
+
+      <h3>Comments</h3>
+      {(blog.comments.length !== 0) &&
+        <div>
+          <ul>
+            {blog.comments.map((comments, index) =>
+              <li key={index}>{comments}</li>
+            )}
+          </ul>
+        </div>
+      }
     </div>
   )
 }
