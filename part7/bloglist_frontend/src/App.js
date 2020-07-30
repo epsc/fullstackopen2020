@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  BrowserRouter as Router,
-  Switch, Route
-} from 'react-router-dom'
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom'
+import Blogs from './components/Blogs'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -24,6 +22,7 @@ const App = () => {
   const user = useSelector(state => state.currentUser)
 
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const blogFormRef = useRef()
 
@@ -129,6 +128,8 @@ const App = () => {
       try {
         dispatch(removeBlog(id))
 
+        history.push('/')
+
         showNotification(
           'pass',
           `Successfully deleted ${deleteBlog.title} by ${deleteBlog.author}`
@@ -148,6 +149,12 @@ const App = () => {
     </Togglable>
   )
 
+  const match = useRouteMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
+
+
   if (user === null) {
     return (
       <LoginForm
@@ -160,8 +167,6 @@ const App = () => {
     )
   }
 
-  const sortByLikes = (a, b) => b.likes - a.likes
-
   return (
     <div>
       <h2>blogs</h2>
@@ -170,28 +175,27 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-      <Router>
-        <Switch>
-          <Route path="/users/:id">
-            <User />
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            {noteForm()}
-            {blogs.sort(sortByLikes).map(blog =>
-              <Blog
-                key={blog.id}
-                user={user}
-                blog={blog}
-                addLike={() => handleLikeBlog(blog.id)}
-                deleteBlog={() => deleteBlog(blog.id)}
-              />
-            )}
-          </Route>
-        </Switch>
-      </Router>
+
+      <Switch>
+        <Route path="/users/:id">
+          <User />
+        </Route>
+        <Route path="/users">
+          <Users />
+        </Route>
+        <Route path="/blogs/:id">
+          <Blog
+            user={user}
+            blog={blog}
+            addLike={() => handleLikeBlog(blog.id)}
+            deleteBlog={() => deleteBlog(blog.id)}
+          />
+        </Route>
+        <Route path="/">
+          {noteForm()}
+          <Blogs blogs={blogs} />
+        </Route>
+      </Switch>
     </div>
   )
 }
