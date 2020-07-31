@@ -13,7 +13,7 @@ const User = () => {
 
   return (
     <div>
-      <h2>{user.name}</h2>
+      <h2 className="mb-3">{user.name}</h2>
       <h3>added blogs</h3>
       <ul>
         {user.blogs.map(blog =>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { addCommentToBlog } from '../reducers/blogReducer'
+import { Button, Form, InputGroup, ListGroup } from 'react-bootstrap'
 
 const Blog = ({ blog, addLike, deleteBlog, user, showNotification }) => {
   const [newComment, setNewComment] = useState('')
@@ -47,41 +48,44 @@ const Blog = ({ blog, addLike, deleteBlog, user, showNotification }) => {
       <a href={blog.url}>{blog.url}</a>
       <br/>
 
-      {blog.likes} likes
-      <button id="like-button" onClick={addLike}>like</button>
+      {blog.likes} likes <Button id="like-button" variant="outline-primary" onClick={addLike}>like</Button>
       <br/>
 
       added by {blogUser}
       <br/>
 
-      <button
+      <Button
         id="delete-button"
+        variant="outline-danger"
         style={showForBlogPosterOnly}
         onClick={deleteBlog}
       >
         delete
-      </button>
-      <br />
+      </Button>
+      <br /><br />
 
       <h3>Comments</h3>
-      <form onSubmit={handleAddComment}>
-        <div>
-          <input
+      <Form onSubmit={handleAddComment}>
+        <InputGroup>
+          <Form.Control
             type="text"
             value={newComment}
             name="comment"
             onChange={handleCommentChange}
           />
-          <button type="submit">add comment</button>
-        </div>
-      </form>
+          <InputGroup.Append>
+            <Button variant="outline-secondary" type="submit">add comment</Button>
+          </InputGroup.Append>
+        </InputGroup>
+      </Form>
+      <br />
       {(blog.comments.length !== 0) &&
         <div>
-          <ul>
+          <ListGroup >
             {blog.comments.map((comments, index) =>
-              <li key={index}>{comments}</li>
+              <ListGroup.Item key={index}>{comments}</ListGroup.Item>
             )}
-          </ul>
+          </ListGroup>
         </div>
       }
     </div>

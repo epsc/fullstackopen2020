@@ -169,12 +169,11 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <NavigationBar
         user={user}
         handleLogout={handleLogout}
       />
-      <h2>blogs</h2>
       <Notification />
 
       <Switch>
