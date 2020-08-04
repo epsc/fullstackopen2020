@@ -1,7 +1,6 @@
   
 import React from 'react'
 import { useQuery } from '@apollo/client'
-
 import { ALL_AUTHORS } from '../queries'
 
 const Authors = (props) => {
@@ -13,7 +12,7 @@ const Authors = (props) => {
 
   // Return loading div if no reponse yet
   if (result.loading) {
-    return <div>loading...</div>
+    return <div>loading authors...</div>
   }
 
   const authors = result.data.allAuthors
