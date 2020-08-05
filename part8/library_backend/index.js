@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const mongoose = require('mongoose')
 const Book = require('./models/book')
 const Author = require('./models/author')
@@ -181,19 +181,26 @@ const resolvers = {
     addBook: async (root, args) => {
       const book = new Book({ ...args })
 
-      // First check if the the author is already in the database so we can create one and add a reference to the author in the book
-      const author = await Author.findOne({ name: args.author })
-      // Add author to authors list if the author of the book is not yet in the list, if already existing, get the id for the book's author field
-      if (!author) {
-        const newAuthor = new Author({ name: args.author })
-        await newAuthor.save()
+      try {
+        // First check if the the author is already in the database so we can create one and add a reference to the author in the book
+        const author = await Author.findOne({ name: args.author })
 
-        book.author = newAuthor._id
-      } else {
-        book.author = author._id
+        // Add author to authors list if the author of the book is not yet in the list, if already existing, get the id for the book's author field
+        if (!author) {
+          const newAuthor = new Author({ name: args.author })
+          await newAuthor.save()
+
+          book.author = newAuthor._id
+        } else {
+          book.author = author._id
+        }
+
+        await book.save()
+      } catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args
+          })
       }
-
-      await book.save()
 
       return await book.populate('author').execPopulate()
     },
