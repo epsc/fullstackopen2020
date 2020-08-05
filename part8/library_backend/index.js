@@ -149,28 +149,33 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: (root, args) => {
-//      if (!args.author && !args.genre) {
-//        return books
-//      }
-//
-//      let filteredBooks = books
-//
-//      if (args.author) {
-//        filteredBooks = filteredBooks.filter(book => book.author === args.author)
-//      }
-//
-//      if (args.genre) {
-//        filteredBooks = filteredBooks.filter(book => book.genres.includes(args.genre))
-//      }
+    allBooks: async (root, args) => {
 
-      return Book.find({}).populate('author')
+      if (!args.genre && !args.author) {
+        return Book.find({}).populate('author')
+      }
+
+      // Add query parameters as necessary
+      let parameters = {}
+      if (args.genre) {
+        parameters.genres = { $in: [args.genre ] }
+      }
+
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author })
+        parameters.author = author._id
+      }
+
+      return await Book.find(parameters).populate('author')
 
     },
     allAuthors: () => Author.find({})
   },
   Author: {
-    bookCount: (root) => books.filter(book => book.author === root.name).length
+    bookCount: async (root) => {
+      const author = await Author.findOne({ name: root.name })
+      return Book.countDocuments({ author: author._id })
+    }
   },
   Mutation: {
     addBook: async (root, args) => {
@@ -192,15 +197,14 @@ const resolvers = {
 
       return await book.populate('author').execPopulate()
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(author => author.name === args.name)
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name })
       if (!author) {
         return null
       }
 
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map(author => author.name === args.name ? updatedAuthor : author)
-      return updatedAuthor
+      author.born = args.setBornTo
+      return author.save()
     }
   }
 }
