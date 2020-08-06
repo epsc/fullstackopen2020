@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from 'react'
 import { useLazyQuery } from '@apollo/client'
-import { USER_INFO, BOOK_RECOMMENDATION } from '../queries'
+import { USER_INFO, ALL_BOOKS } from '../queries'
 
 const Recommendations = (props) => {
   const [favoriteGenre, setFavoriteGenre] = useState(null)
   const [ getUserInfo, userInfo ] = useLazyQuery(USER_INFO)
-  const [ getBooks, result ] = useLazyQuery(BOOK_RECOMMENDATION)
+  const [ getBooks, result ] = useLazyQuery(ALL_BOOKS)
 
   // Conditionally get user's favorite genre if user has logged in
   useEffect(() => {
     if (props.token) {
-      getUserInfo()
+      // this condition is to fix bug when logging in after logging out.
+      // userInfo already has content in this case so just using getUserInfo() doesn't work
+      if (userInfo.data?.me === null) {
+        userInfo.refetch()
+      } else {
+        getUserInfo()
+      }
     }
-  }, [props.token, getUserInfo])
+  }, [props.token]) //eslint-disable-line
 
   // Conditionally set the favorite genre and query the books
   // only after userInfo query has been run
   useEffect(() => {
-    if (userInfo.data && props.token) {
+    if (userInfo.data?.me && props.token) {
       setFavoriteGenre(userInfo.data.me.favoriteGenre)
-      getBooks({ variables: { genre: favoriteGenre }})
+      getBooks({ variables: { genre: userInfo.data.me.favoriteGenre }})
     }
-  }, [userInfo, favoriteGenre, getBooks, props.token])
+  }, [userInfo.data, favoriteGenre, getBooks, props.token])
 
   
   if (!props.show) {
