@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
+  const [genre, setGenre] = useState(null)
   const result = useQuery(ALL_BOOKS)
+
 
   if (!props.show) {
     return null
@@ -16,6 +18,18 @@ const Books = (props) => {
   }
 
   const books = result.data.allBooks
+
+  // get genres from all books but remove duplicates (Set is used so that values are unique then returned back to array)
+  // Flatmap is used to get from the genre arrays of each book and return a flattened array
+  const genres = [ ...new Set(books.flatMap(book => book.genres)) ]
+
+  const filter = (genre) => {
+    setGenre(genre)
+  }
+
+  const booksToShow = genre
+    ? books.filter(book => book.genres.includes(genre))
+    : books
 
   return (
     <div>
@@ -32,7 +46,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {books.map(a =>
+          {booksToShow.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -41,6 +55,17 @@ const Books = (props) => {
           )}
         </tbody>
       </table>
+      <div>
+          {genres.map(genre => 
+            <button
+              key={genre}
+              onClick={() => filter(genre)}
+            >
+              {genre}
+            </button>
+          )}
+          <button onClick={() => setGenre(null)}>all genres</button>
+        </div>
     </div>
   )
 }
