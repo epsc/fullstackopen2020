@@ -24,6 +24,11 @@ const App = () => {
     setToken(null)
     localStorage.removeItem('libraryApp-user-token')
     client.resetStore()
+
+    // redirect to a different page if logging out when viewing a page that requires login
+    if (page === 'add' || page === 'updateAuthor' || page === 'recommend') {
+      setPage('authors')
+    }
   }
 
   return (
@@ -70,6 +75,7 @@ const App = () => {
 
       <Recommendations
         show={page === 'recommend'}
+        token={token}
       />
 
     </div>
