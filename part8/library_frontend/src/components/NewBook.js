@@ -20,7 +20,8 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
     
-    createBook({ variables: 
+    // add await to wait for success before continuing with redirect. error handling not yet needed.
+    await createBook({ variables: 
       {
         title, 
         author, 
@@ -34,6 +35,7 @@ const NewBook = (props) => {
     setAuthor('')
     setGenres([])
     setGenre('')
+    props.setPage('books')
   }
 
   const addGenre = () => {

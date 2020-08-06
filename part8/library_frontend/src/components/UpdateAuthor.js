@@ -31,16 +31,17 @@ const UpdateAuthor = (props) => {
       })
     })
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault()
     
-    changeBirthyear({ variables: {
+    await changeBirthyear({ variables: {
       name: selected.value, 
       year: parseInt(year) 
     }})
 
     setSelected('')
     setYear('')
+    props.setPage('authors')
   }
 
   return (
