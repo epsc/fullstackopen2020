@@ -26,20 +26,22 @@ const App = () => {
       })
     }
 
-    // Also update the recommended books list
+    // Also update the recommended books list if it is the correct genre
     const favoriteGenre = client.readQuery({ query: USER_INFO }).me.favoriteGenre
-    const recommendedInStore = client.readQuery(
-      { 
-        query: ALL_BOOKS,
-        variables: { genre: favoriteGenre }
+    if (addedBook.genres.includes(favoriteGenre)) {
+      const recommendedInStore = client.readQuery(
+        { 
+          query: ALL_BOOKS,
+          variables: { genre: favoriteGenre }
+        }
+      )
+      if (!includedIn(recommendedInStore.allBooks, addedBook)) {
+        client.writeQuery({
+          query: ALL_BOOKS,
+          variables: { genre: favoriteGenre },
+          data: { allBooks: recommendedInStore.allBooks.concat(addedBook) }
+        })
       }
-    )
-    if (!includedIn(recommendedInStore.allBooks, addedBook)) {
-      client.writeQuery({
-        query: ALL_BOOKS,
-        variables: { genre: favoriteGenre },
-        data: { allBooks: recommendedInStore.allBooks.concat(addedBook) }
-      })
     }
 
     // Also check if the author of the book is not yet in the list

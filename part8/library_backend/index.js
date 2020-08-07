@@ -125,10 +125,7 @@ const resolvers = {
     }
   },
   Author: {
-    bookCount: async (root) => {
-      const author = await Author.findOne({ name: root.name })
-      return Book.countDocuments({ author: author._id })
-    }
+    bookCount: (root) => root.books.length
   },
   Mutation: {
     addBook: async (root, args, { currentUser }) => {
@@ -148,11 +145,18 @@ const resolvers = {
           await newAuthor.save()
 
           book.author = newAuthor._id
+
+          await book.save()
+          // Add book to author's book list
+          newAuthor.books = newAuthor.books.concat(book._id)
+          await newAuthor.save()
+          
         } else {
           book.author = author._id
+          await book.save()
+          author.books = author.books.concat(book._id)
+          await author.save()
         }
-
-        await book.save()
       } catch (error) {
           throw new UserInputError(error.message, {
             invalidArgs: args
@@ -160,7 +164,7 @@ const resolvers = {
       }
 
       await book.populate('author').execPopulate()
-      
+
       pubsub.publish('BOOK_ADDED', { bookAdded: book })
 
       return book
