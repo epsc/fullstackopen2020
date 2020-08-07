@@ -7,17 +7,56 @@ import NewBook from './components/NewBook'
 import UpdateAuthor from './components/UpdateAuthor'
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
-import { BOOK_ADDED } from './queries'
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS, USER_INFO } from './queries'
 
 const App = () => {
   const [token, setToken] = useState(null)
   const [page, setPage] = useState('authors')
   const client = useApolloClient()
 
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) =>
+      set.map(entry => entry.id).includes(object.id)
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) }
+      })
+    }
+
+    // Also update the recommended books list
+    const favoriteGenre = client.readQuery({ query: USER_INFO }).me.favoriteGenre
+    const recommendedInStore = client.readQuery(
+      { 
+        query: ALL_BOOKS,
+        variables: { genre: favoriteGenre }
+      }
+    )
+    if (!includedIn(recommendedInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        variables: { genre: favoriteGenre },
+        data: { allBooks: recommendedInStore.allBooks.concat(addedBook) }
+      })
+    }
+
+    // Also check if the author of the book is not yet in the list
+    const authorDataInStore = client.readQuery({ query: ALL_AUTHORS })
+    if (!includedIn(authorDataInStore.allAuthors, addedBook.author)) {
+      client.writeQuery({
+        query: ALL_AUTHORS,
+        data: { allAuthors: authorDataInStore.allAuthors.concat(addedBook.author) }
+      })
+    }
+  }
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const addedBook = subscriptionData.data.bookAdded
       window.alert(`${addedBook.title} by ${addedBook.author.name} added`)
+      updateCacheWith(addedBook)
     }
   })
 
