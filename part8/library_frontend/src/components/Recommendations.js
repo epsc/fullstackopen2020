@@ -27,8 +27,7 @@ const Recommendations = (props) => {
       setFavoriteGenre(userInfo.data.me.favoriteGenre)
       getBooks({ variables: { genre: userInfo.data.me.favoriteGenre }})
     }
-  }, [userInfo.data, favoriteGenre, getBooks, props.token])
-
+  }, [userInfo.data, props.token, getBooks])
   
   if (!props.show) {
     return null
