@@ -1,11 +1,11 @@
 const calculateBMI = (heightInCm: number, weightInKg: number) : string => {
   if (heightInCm <= 0 || weightInKg <= 0) {
-    return 'Invalid height or weight'
+    return 'Invalid height or weight';
   }
 
   const bmi =  weightInKg / Math.pow(heightInCm / 100, 2);
   let result;
-  
+
   if (bmi < 15) {
     result = 'Very severely underweight';
   } else if (bmi < 16) {
