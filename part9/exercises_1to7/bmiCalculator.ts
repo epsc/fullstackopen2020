@@ -17,13 +17,13 @@ const parseArguments = (args: Array<string>): HeightAndWeight => {
   }
 }
 
-const calculateBMI = (heightInCm: number, weightInKg: number) : string => {
+const calculateBmi = (heightInCm: number, weightInKg: number) : string => {
   if (heightInCm <= 0 || weightInKg <= 0) {
     return 'Invalid height or weight';
   }
 
   const bmi =  weightInKg / Math.pow(heightInCm / 100, 2);
-  let result;
+  let result: string;
 
   if (bmi < 15) {
     result = 'Very severely underweight';
@@ -39,7 +39,7 @@ const calculateBMI = (heightInCm: number, weightInKg: number) : string => {
     result = 'Obese Class I (Moderately Obese)';
   } else if (bmi < 40) {
     result = 'Obese Class II (Severely Obese)';
-  } else if (bmi > 40) {
+  } else {
     result = 'Very severely obese';
   }
   return result;
@@ -47,7 +47,10 @@ const calculateBMI = (heightInCm: number, weightInKg: number) : string => {
 
 try {
   const { height, weight } = parseArguments(process.argv);
-  console.log(calculateBMI(height, weight));
+  console.log(calculateBmi(height, weight));
 } catch (error) {
   console.log('An error occurred: ', error.message);
 }
+
+
+export default calculateBmi;
