@@ -1,7 +1,7 @@
 interface Result {
   periodLength: number,
   trainingDays: number,
-  success: Boolean,
+  success: boolean,
   rating: number,
   ratingDescription: string,
   target: number,
@@ -24,15 +24,15 @@ const parseInput = (args: Array<string>): ExerciseValues => {
     return {
       targetHours: Number(args[2]),
       dailyHours: hours
-    }
+    };
   } else {
     throw new Error('Arguments must be numbers');
   }
-}
+};
 
 const calculateExercises = (dailyExerciseHours: Array<number>, targetExerciseHours: number) : Result => {
   const periodLength: number = dailyExerciseHours.length;
-  const trainingDays: number = dailyExerciseHours.filter(hours => hours > 0).length
+  const trainingDays: number = dailyExerciseHours.filter(hours => hours > 0).length;
   const average: number = dailyExerciseHours.reduce((sum, value) => sum + value) / periodLength;
   const success: boolean = average >= targetExerciseHours ? true : false;
 
@@ -55,12 +55,12 @@ const calculateExercises = (dailyExerciseHours: Array<number>, targetExerciseHou
     periodLength, trainingDays, success, rating, ratingDescription,
     target: targetExerciseHours,
     average
-  }
-}
+  };
+};
 
 try {
   const { targetHours, dailyHours } = parseInput(process.argv);
   console.log(calculateExercises(dailyHours, targetHours));
 } catch (error) {
-  console.log('An error occurred: ', error.message);
+  console.log('An error occurred: ', error);
 }

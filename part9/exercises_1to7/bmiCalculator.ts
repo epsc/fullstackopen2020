@@ -11,11 +11,11 @@ const parseArguments = (args: Array<string>): HeightAndWeight => {
     return {
       height: Number(args[2]),
       weight: Number(args[3])
-    }
+    };
   } else {
     throw new Error('Input values were not numbers');
   }
-}
+};
 
 const calculateBmi = (heightInCm: number, weightInKg: number) : string => {
   if (heightInCm <= 0 || weightInKg <= 0) {
@@ -43,13 +43,13 @@ const calculateBmi = (heightInCm: number, weightInKg: number) : string => {
     result = 'Very severely obese';
   }
   return result;
-}
+};
 
 try {
   const { height, weight } = parseArguments(process.argv);
   console.log(calculateBmi(height, weight));
 } catch (error) {
-  console.log('An error occurred: ', error.message);
+  console.log('An error occurred: ', error);
 }
 
 

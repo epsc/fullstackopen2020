@@ -8,8 +8,8 @@ app.get('/hello', (_request, response) => {
 });
 
 app.get('/bmi', (request, response) => {
-  const height: number = Number(request.query.height);
-  const weight: number = Number(request.query.weight);
+  const height = Number(request.query.height);
+  const weight = Number(request.query.weight);
 
   // height and weight should be provided and should be a number
   if (!height || !weight || isNaN(height) || isNaN(weight)) {
