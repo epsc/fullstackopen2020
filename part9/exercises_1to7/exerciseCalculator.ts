@@ -10,7 +10,7 @@ interface Result {
 
 type Rating = 1 | 2 | 3;
 
-interface ExerciseValues {
+export interface ExerciseValues {
   targetHours: number;
   dailyHours: Array<number>;
 }
@@ -58,9 +58,13 @@ const calculateExercises = (dailyExerciseHours: Array<number>, targetExerciseHou
   };
 };
 
-try {
-  const { targetHours, dailyHours } = parseInput(process.argv);
-  console.log(calculateExercises(dailyHours, targetHours));
-} catch (error) {
-  console.log('An error occurred: ', error);
+// If run via console
+if (require.main === module) {
+  try {
+    const { targetHours, dailyHours } = parseInput(process.argv);
+    console.log(calculateExercises(dailyHours, targetHours));
+  } catch (error) {
+    console.log('An error occurred: ', error);
+  }
 }
+export default calculateExercises;

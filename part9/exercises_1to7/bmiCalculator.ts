@@ -45,12 +45,16 @@ const calculateBmi = (heightInCm: number, weightInKg: number) : string => {
   return result;
 };
 
-try {
-  const { height, weight } = parseArguments(process.argv);
-  console.log(calculateBmi(height, weight));
-} catch (error) {
-  console.log('An error occurred: ', error);
+
+// If called via console
+if (require.main === module) {
+  try {
+    const { height, weight } = parseArguments(process.argv);
+    console.log(calculateBmi(height, weight));
+  } catch (error) {
+    console.log('An error occurred: ', error);
+  }
 }
 
-
 export default calculateBmi;
+
