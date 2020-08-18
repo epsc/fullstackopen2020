@@ -45,7 +45,7 @@ const PatientPage: React.FC = () => {
   };
 
   // Return null if values have not been initialized yet
-  if (!patient) {
+  if (!patient || !patient.ssn) {
     return null;
   }
   
@@ -55,6 +55,20 @@ const PatientPage: React.FC = () => {
       </h2>
       ssn: {patient.ssn} <br/>
       occupation: {patient.occupation}
+      <br/>
+      <h3>entries</h3>
+      {patient.entries.map(entry => 
+        <div key={entry.id}>
+          {entry.date} <i>{entry.description}</i>
+          <ul>
+            {entry.diagnosisCodes && entry.diagnosisCodes.map(code => 
+              <li key={code}>
+                {code}
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
