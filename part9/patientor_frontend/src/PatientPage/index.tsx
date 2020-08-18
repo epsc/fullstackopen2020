@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Card } from 'semantic-ui-react';
 
 import { Patient, Gender } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, setPatient } from '../state';
+import EntryDetails from './EntryDetails';
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients, diagnoses }, dispatch] = useStateValue();
+  const [{ patients }, dispatch] = useStateValue();
   const patient = patients[id];
   
   useEffect(() => {
@@ -57,18 +58,11 @@ const PatientPage: React.FC = () => {
       occupation: {patient.occupation}
       <br/>
       <h3>entries</h3>
-      {patient.entries.map(entry => 
-        <div key={entry.id}>
-          {entry.date} <i>{entry.description}</i>
-          <ul>
-            {entry.diagnosisCodes && entry.diagnosisCodes.map(code => 
-              <li key={code}>
-                {code} {diagnoses[code]?.name}
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+      <Card.Group>
+        {patient.entries.map(entry =>
+          <EntryDetails key={entry.id} entry={entry} />
+        )}
+      </Card.Group>
     </div>
   );
 };
