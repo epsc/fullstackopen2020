@@ -1,10 +1,10 @@
 import express from 'express';
-import diaryService from '../services/diaryService';
+import diagnosisService from '../services/diagnosisService';
 
 const router = express.Router();
 
 router.get('/', (_request, response) => {
-  response.send(diaryService.getEntries());
+  response.send(diagnosisService.getEntries());
 });
 
 export default router;
