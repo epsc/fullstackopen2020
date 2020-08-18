@@ -13,13 +13,12 @@ const getEntries = (): PatientNonSensitive[] => {
 };
 
 const getPatient = (id: string): Patient => {
-  const patient = patients.find(patient => patient.id = id);
+  const patient = patients.find(patient => patient.id === id);
 
   if (!patient) {
     throw new Error('Patient not found');
   }
 
-  console.log(patient);
   return patient;
 };
 
