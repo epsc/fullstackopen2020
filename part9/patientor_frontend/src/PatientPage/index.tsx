@@ -9,7 +9,7 @@ import { useStateValue, setPatient } from '../state';
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
   const patient = patients[id];
   
   useEffect(() => {
@@ -63,7 +63,7 @@ const PatientPage: React.FC = () => {
           <ul>
             {entry.diagnosisCodes && entry.diagnosisCodes.map(code => 
               <li key={code}>
-                {code}
+                {code} {diagnoses[code]?.name}
               </li>
             )}
           </ul>
