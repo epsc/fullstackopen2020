@@ -65,8 +65,3 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthCareEntry
   | HealthCheckEntry;
-
-export interface EntryProps {
-  entry: Entry;
-  diagnoses: { [id: string]: Diagnosis };
-}

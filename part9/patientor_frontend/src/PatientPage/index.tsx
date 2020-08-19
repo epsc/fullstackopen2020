@@ -1,17 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Icon, Card } from 'semantic-ui-react';
+import { Icon, Card, Button } from 'semantic-ui-react';
 
 import { Patient, Gender } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, setPatient } from '../state';
 import EntryDetails from './EntryDetails';
+import AddEntryModal from '../AddEntryModal';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [{ patients }, dispatch] = useStateValue();
   const patient = patients[id];
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const openModal = (): void => {
+    setModalOpen(true);
+  };
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const {data: updatedPatient} = await axios.post<Patient>(`${apiBaseUrl}/patients/${id}/entries`, values);
+      dispatch(setPatient(updatedPatient));
+      closeModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   
   useEffect(() => {
     // If condition is to only fetch if data has not been fetched before.
@@ -58,6 +81,13 @@ const PatientPage: React.FC = () => {
       occupation: {patient.occupation}
       <br/>
       <h3>entries</h3>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onClose={closeModal}
+        onSubmit={submitNewEntry}
+      />
+      <Button onClick={openModal}>Add New Entry</Button>
+      <br /><br />
       <Card.Group>
         {patient.entries.map(entry =>
           <EntryDetails key={entry.id} entry={entry} />
