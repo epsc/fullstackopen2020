@@ -33,8 +33,37 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
         healthCheckRating: HealthCheckRating.Healthy
       }}
       onSubmit={onSubmit}
+      validate={values => {
+        const requiredError = 'Field is required';
+        const dateError = 'Invalid date';
+        const healthCheckRatingError = 'Rating should be 0, 1, 2 or 3';
+        const errors: { [field: string]: string } = {};
+
+        const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+
+        if (!values.description) {
+          errors.description = requiredError;
+        }
+        if (!values.date) {
+          errors.date = requiredError;
+        }
+        if (!values.specialist) {
+          errors.specialist = requiredError;
+        }
+        // Zero is a 'falsy' value but is a valid entry value for this property
+        if (values.healthCheckRating !==0 && !values.healthCheckRating) {
+          errors.healthCheckRating = requiredError;
+        }
+        if (values.healthCheckRating % 1 !== 0 || values.healthCheckRating < 0 || values.healthCheckRating > 3) {
+          errors.healthCheckRating = healthCheckRatingError;
+        }
+        if (!dateFormat.test(values.date) || !Date.parse(values.date)) {
+          errors.date = dateError;
+        }
+        return errors;
+      }}
     >
-      {({ setFieldValue, setFieldTouched }) => (
+      {({ isValid, dirty, setFieldValue, setFieldTouched }) => (
         <Form className="form ui">
           <EntryTypeSelection onChange={changeEntryType} entryType={entryType} />
           <Field
@@ -68,7 +97,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
               </Button>
             </Grid.Column>
             <Grid.Column floated="right" width={5}>
-              <Button type="submit" floated="right" color="green">
+              <Button type="submit" floated="right" color="green" disabled={!dirty || !isValid}>
                 Add
               </Button>
             </Grid.Column>

@@ -16,6 +16,7 @@ const PatientPage: React.FC = () => {
   const patient = patients[id];
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>();
 
   const openModal = (): void => {
     setModalOpen(true);
@@ -23,6 +24,7 @@ const PatientPage: React.FC = () => {
 
   const closeModal = (): void => {
     setModalOpen(false);
+    setError(undefined);
   };
 
   const submitNewEntry = async (values: EntryFormValues) => {
@@ -32,6 +34,11 @@ const PatientPage: React.FC = () => {
       closeModal();
     } catch (error) {
       console.log(error);
+      if (error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError(error.message);
+      }
     }
   };
 
@@ -85,6 +92,7 @@ const PatientPage: React.FC = () => {
         modalOpen={modalOpen}
         onClose={closeModal}
         onSubmit={submitNewEntry}
+        error={error}
       />
       <Button onClick={openModal}>Add New Entry</Button>
       <br /><br />
