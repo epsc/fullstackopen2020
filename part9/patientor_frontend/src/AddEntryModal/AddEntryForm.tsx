@@ -2,45 +2,94 @@ import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { Button, Grid } from 'semantic-ui-react';
 
-import { HealthCheckRating, HealthCheckEntry } from '../types';
+import { HealthCheckRating, EntryType, EntryFormInputs, HealthCheckEntry, HospitalEntry, OccupationalHealthCareEntry } from '../types';
 import { useStateValue } from '../state';
 import { TextField, DiagnosisSelection } from '../AddPatientModal/FormField';
 import { EntryTypeSelection, EntryFields } from './EntryTypeSelection';
 
-export type EntryFormValues = Omit<HealthCheckEntry, 'id'>;
+// Form specific types
+type HealthCheckFormValues = Omit<HealthCheckEntry, 'id'>;
+type HospitalFormValues = Omit<HospitalEntry, 'id'>;
+type OccupationalFormValues = Omit<OccupationalHealthCareEntry, 'id'>;
+export type EntryFormValues = HealthCheckFormValues | HospitalFormValues | OccupationalFormValues;
 
 interface Props {
-  onSubmit: (values: EntryFormValues) => void;
+  onSubmit: (values: EntryFormInputs) => void;
   onClose: () => void;
 }
 
 const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
   const [{ diagnoses }] = useStateValue();
-  const [entryType, setEntryType] = useState<'HealthCheck'>('HealthCheck');
+  const [entryType, setEntryType] = useState<EntryType>('OccupationalHealthcare');
 
-  const changeEntryType = (value: 'HealthCheck') => {
+  const changeEntryType = (value: EntryType) => {
     setEntryType(value);
+  };
+
+  const initialValues = (entryType: EntryType): EntryFormInputs => {
+    return ({
+      type: entryType,
+      description: '',
+      date: '',
+      specialist: '',
+      diagnosisCodes: undefined,
+      healthCheckRating: HealthCheckRating.Healthy,
+      employerName: '',
+      sickLeaveStartDate: '',
+      sickLeaveEndDate: ''
+    });
+    
+    //const values = {
+    //  description: '',
+    //  date: '',
+    //  specialist: '',
+    //  diagnosisCodes: undefined,
+    //};
+    //switch (entryType) {
+    //  case 'HealthCheck':
+    //    return ({
+    //      ...values,
+    //      type: 'HealthCheck',
+    //      healthCheckRating: HealthCheckRating.Healthy
+    //    });
+    //  case 'OccupationalHealthcare':
+    //    return ({
+    //      ...values,
+    //      type: 'OccupationalHealthcare',
+    //      employerName: '',
+    //      sickLeave: {
+    //        startDate: '',
+    //        endDate: ''
+    //      }
+    //    });
+    //  case 'Hospital':
+    //    return ({
+    //      ...values,
+    //      type: 'Hospital',
+    //    });
+    //  default:
+    //    return assertNever(entryType);
+    //}
   };
   
   return (
     <Formik
-      initialValues={{
-        type: entryType,
-        description: '',
-        date: '',
-        specialist: '',
-        diagnosisCodes: [],
-        healthCheckRating: HealthCheckRating.Healthy
-      }}
+      initialValues={initialValues(entryType)}
+      enableReinitialize={true}
       onSubmit={onSubmit}
       validate={values => {
         const requiredError = 'Field is required';
         const dateError = 'Invalid date';
+        const startAndEndError = 'Must have both a start and end date';
         const healthCheckRatingError = 'Rating should be 0, 1, 2 or 3';
         const errors: { [field: string]: string } = {};
 
         const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+        const dateValidated = (date: string) => {
+          return (dateFormat.test(date) && Boolean(Date.parse(date)));
+        };
 
+        // Common field validation
         if (!values.description) {
           errors.description = requiredError;
         }
@@ -50,22 +99,49 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
         if (!values.specialist) {
           errors.specialist = requiredError;
         }
-        // Zero is a 'falsy' value but is a valid entry value for this property
-        if (values.healthCheckRating !==0 && !values.healthCheckRating) {
-          errors.healthCheckRating = requiredError;
-        }
-        if (values.healthCheckRating % 1 !== 0 || values.healthCheckRating < 0 || values.healthCheckRating > 3) {
-          errors.healthCheckRating = healthCheckRatingError;
-        }
         if (!dateFormat.test(values.date) || !Date.parse(values.date)) {
           errors.date = dateError;
         }
+
+        // HealthCheck form validation
+        if (values.type === 'HealthCheck') {
+          // Zero is a 'falsy' value but is a valid entry value for this property
+          if (values.healthCheckRating !==0 && !values.healthCheckRating) {
+            errors.healthCheckRating = requiredError;
+          }
+          if (values.healthCheckRating % 1 !== 0 || values.healthCheckRating < 0 || values.healthCheckRating > 3) {
+            errors.healthCheckRating = healthCheckRatingError;
+          }
+        }
+        
+        // Occupational Healthcare validation
+        if (values.type === 'OccupationalHealthcare') {
+          if (!values.employerName) {
+            errors.employerName = requiredError;
+          }
+          if (values.sickLeaveStartDate && !dateValidated(values.sickLeaveStartDate)) {
+            errors.sickLeaveStartDate = dateError;
+          }
+          if (values.sickLeaveEndDate && !dateValidated(values.sickLeaveEndDate)) {
+            errors.sickLeaveEndDate = dateError;
+          }
+          // If fields are used, both start and end date must be present
+          if ((values.sickLeaveEndDate && !values.sickLeaveStartDate) ||
+            (!values.sickLeaveEndDate && values.sickLeaveStartDate)) {
+            errors.sickLeaveEndDate = startAndEndError;
+          }
+          if ((values.sickLeaveEndDate && values.sickLeaveStartDate) &&
+            (Date.parse(values.sickLeaveEndDate) < Date.parse(values.sickLeaveStartDate))) {
+              errors.sickLeaveEndDate = 'End date must not be earlier than the start date';
+            }
+        }
+
         return errors;
       }}
     >
       {({ isValid, dirty, setFieldValue, setFieldTouched }) => (
         <Form className="form ui">
-          <EntryTypeSelection onChange={changeEntryType} entryType={entryType} />
+          <EntryTypeSelection onChange={changeEntryType} entryType={entryType}/>
           <Field
             label="Description"
             placeholder="description"

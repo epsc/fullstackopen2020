@@ -65,3 +65,21 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthCareEntry
   | HealthCheckEntry;
+
+export type EntryType = "HealthCheck" | "Hospital" | "OccupationalHealthcare";
+
+
+// I give up, flatten the nested object types instead. Look up Yup and schema validation later, it seems more convenient with formik.
+export interface EntryFormInputs {
+  type: EntryType;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
+  healthCheckRating: HealthCheckRating;
+  employerName: string;
+  sickLeaveStartDate?: string;
+  sickLeaveEndDate?:  string;
+  dischargeDate?: string;
+  dischargeCriteria?: string;
+}
