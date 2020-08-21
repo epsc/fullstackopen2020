@@ -9,7 +9,7 @@ import { useStateValue, setPatient } from '../state';
 import EntryDetails from './EntryDetails';
 import AddEntryModal from '../AddEntryModal';
 import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
-import { assertNever } from '../AddEntryModal/EntryTypeSelection';
+import { assertNever } from '../AddEntryModal/EntryFields';
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

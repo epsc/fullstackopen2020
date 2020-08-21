@@ -69,7 +69,8 @@ export type Entry =
 export type EntryType = "HealthCheck" | "Hospital" | "OccupationalHealthcare";
 
 
-// I give up, flatten the nested object types instead. Look up Yup and schema validation later, it seems more convenient with formik.
+// I give up, flatten the nested object types instead for now.
+// Reexamine form and type structure and design and look up Yup and schema validation later, it seems more convenient with formik.
 export interface EntryFormInputs {
   type: EntryType;
   description: string;

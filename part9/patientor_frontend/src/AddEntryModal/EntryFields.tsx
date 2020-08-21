@@ -6,7 +6,7 @@ import { EntryType } from '../types';
 import { NumberField, TextField } from '../AddPatientModal/FormField';
 
 interface EntryFieldsProps {
-  entryType: string;
+  entryType: EntryType;
 }
 
 interface SelectionProps {
@@ -60,14 +60,33 @@ export const EntryFields: React.FC<EntryFieldsProps> = ({ entryType }) => {
           </Form.Group>
         </div>
       );
-    default:
-      return null;
+      case 'Hospital':
+        return (
+        <span>
+          <h4>Discharge <i>(Optional)</i></h4>
+          <Form.Group widths='equal'>
+            <Field 
+              label="Date"
+              placeholder="YYYY-MM-DD"
+              name="dischargeDate"
+              component={TextField}
+            />
+            <Field 
+              label="Criteria"
+              placeholder="criteria"
+              name="dischargeCriteria"
+              component={TextField}
+            />
+          </Form.Group>
+        </span>
+      );
+      default:
+        return assertNever(entryType);
   }
 };
 
 export const EntryTypeSelection: React.FC<SelectionProps> = ({ onChange, entryType }) => {
-  const entryTypes = ['HealthCheck', 'OccupationalHealthcare'];
-  //const entryTypes = ['HealthCheck', 'Hospital', 'OccupationalHealthcare'];
+  const entryTypes = ['HealthCheck', 'Hospital', 'OccupationalHealthcare'];
   const entryTypeOptions = entryTypes.map(type => ({
     key: type,
     text: type,
@@ -78,7 +97,7 @@ export const EntryTypeSelection: React.FC<SelectionProps> = ({ onChange, entryTy
     _event: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps
   ) => {
-    if (data.value === 'HealthCheck' || data.value === 'OccupationalHealthcare') {
+    if (data.value === 'HealthCheck' || data.value ==='Hospital' || data.value === 'OccupationalHealthcare') {
       onChange(data.value);
     }
   };
@@ -97,4 +116,4 @@ export const EntryTypeSelection: React.FC<SelectionProps> = ({ onChange, entryTy
   );
 };
 
-export default EntryTypeSelection;
+export default EntryFields;

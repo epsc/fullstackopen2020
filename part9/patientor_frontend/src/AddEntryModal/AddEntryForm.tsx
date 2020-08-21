@@ -5,7 +5,7 @@ import { Button, Grid } from 'semantic-ui-react';
 import { HealthCheckRating, EntryType, EntryFormInputs, HealthCheckEntry, HospitalEntry, OccupationalHealthCareEntry } from '../types';
 import { useStateValue } from '../state';
 import { TextField, DiagnosisSelection } from '../AddPatientModal/FormField';
-import { EntryTypeSelection, EntryFields } from './EntryTypeSelection';
+import { EntryTypeSelection, EntryFields } from './EntryFields';
 
 // Form specific types
 type HealthCheckFormValues = Omit<HealthCheckEntry, 'id'>;
@@ -20,7 +20,7 @@ interface Props {
 
 const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
   const [{ diagnoses }] = useStateValue();
-  const [entryType, setEntryType] = useState<EntryType>('OccupationalHealthcare');
+  const [entryType, setEntryType] = useState<EntryType>('HealthCheck');
 
   const changeEntryType = (value: EntryType) => {
     setEntryType(value);
@@ -36,40 +36,10 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
       healthCheckRating: HealthCheckRating.Healthy,
       employerName: '',
       sickLeaveStartDate: '',
-      sickLeaveEndDate: ''
+      sickLeaveEndDate: '',
+      dischargeDate: '',
+      dischargeCriteria: '',
     });
-    
-    //const values = {
-    //  description: '',
-    //  date: '',
-    //  specialist: '',
-    //  diagnosisCodes: undefined,
-    //};
-    //switch (entryType) {
-    //  case 'HealthCheck':
-    //    return ({
-    //      ...values,
-    //      type: 'HealthCheck',
-    //      healthCheckRating: HealthCheckRating.Healthy
-    //    });
-    //  case 'OccupationalHealthcare':
-    //    return ({
-    //      ...values,
-    //      type: 'OccupationalHealthcare',
-    //      employerName: '',
-    //      sickLeave: {
-    //        startDate: '',
-    //        endDate: ''
-    //      }
-    //    });
-    //  case 'Hospital':
-    //    return ({
-    //      ...values,
-    //      type: 'Hospital',
-    //    });
-    //  default:
-    //    return assertNever(entryType);
-    //}
   };
   
   return (
@@ -134,6 +104,17 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onClose }) => {
             (Date.parse(values.sickLeaveEndDate) < Date.parse(values.sickLeaveStartDate))) {
               errors.sickLeaveEndDate = 'End date must not be earlier than the start date';
             }
+        }
+
+        // Hospital validation
+        if (values.type === 'Hospital') {
+          if (values.dischargeDate && !dateValidated(values.dischargeDate)) {
+            errors.dischargeDate = dateError;
+          }
+          if ((values.dischargeDate && !values.dischargeCriteria) || 
+          (!values.dischargeDate && values.dischargeCriteria)) {
+            errors.dischargeCriteria = 'Both date and criteria for discharge must be present';
+          }
         }
 
         return errors;
